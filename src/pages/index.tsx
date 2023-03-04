@@ -6,6 +6,7 @@ import { Text } from '@/components/Text';
 // import { envs } from '@/utils/env';
 import { isEmpty } from '@/utils/is';
 
+import { IconMe } from './Icons';
 import { WeixinDialog } from './WeixinDiaog';
 
 interface Msg {
@@ -57,6 +58,7 @@ export const App = () => {
       <WeixinDialog />
       <Center width="100%" height="100vh">
         <Center background={'pink'} size="200px">
+          <IconMe />
           <Text>Hello world!</Text>
           <Text maxLines={1}>
             风急天高猿啸哀，渚清沙白鸟飞回。 无边落木萧萧下，不尽长江滚滚来。
