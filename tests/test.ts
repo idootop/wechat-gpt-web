@@ -1,12 +1,13 @@
 import { http } from '@/services/http';
-import { printf, printJson } from '@/utils/base';
+import { printf } from '@/utils/base';
+import { envs } from '@/utils/env';
 
 const main = async () => {
-  const data = await http.get(
-    'https://movie.douban.com/j/subject_suggest?q=爱的迫降',
-  );
-  printJson(data);
-  printf(`Hello world`);
+  const data = await http.post(envs.kAPI, {
+    userId: 'test',
+    question: '你好，你是谁',
+  });
+  printf(data);
 };
 
 main();

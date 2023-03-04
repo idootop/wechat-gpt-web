@@ -3,8 +3,8 @@ import * as path from 'path';
 import { defineConfig, splitVendorChunkPlugin } from 'vite';
 import { createHtmlPlugin } from 'vite-plugin-html';
 
-const title = 'Vite-typescript-template';
-const description = 'Vite-typescript-template';
+const title = '乂乂又又';
+const description = '纸上得来终觉浅，绝知此事要躬行';
 
 export default defineConfig({
   plugins: [
