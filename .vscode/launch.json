@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Chrome",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000/",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Test.ts",
+      "type": "node",
+      "request": "launch",
+      "args": ["${workspaceFolder}/tests/test.ts"],
+      "runtimeArgs": [
+        "--experimental-specifier-resolution=node",
+        "--loader",
+        "./scripts/esm-loader.js",
+        "-r",
+        "tsconfig-paths/register",
+        "-r",
+        "./scripts/disable-experimental-warning.cjs"
+      ],
+      "cwd": "${workspaceRoot}",
+      "internalConsoleOptions": "openOnSessionStart",
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  ]
+}
