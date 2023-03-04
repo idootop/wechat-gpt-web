@@ -19,6 +19,8 @@ export const Text = forwardRef((props: TextProps, ref: any) => {
     ...props,
     ...{
       style: {
+        wordWrap: 'break-word',
+        whiteSpace: 'pre-wrap',
         ...style,
         ...maxLinesStyle,
       },

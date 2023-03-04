@@ -17,6 +17,7 @@ body,
   -moz-osx-font-smoothing: grayscale;
   text-size-adjust: 100%;
   -webkit-tap-highlight-color: rgb(0 0 0 / 0%);
+  background: #ededed;
 }
 
 /* 去掉移动端点击蓝色遮罩 */
@@ -32,6 +33,7 @@ div:focus {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
 .hide-scollbar::-webkit-scrollbar {
   display: none;
 }
