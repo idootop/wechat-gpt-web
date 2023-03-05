@@ -1,7 +1,13 @@
-// import { http } from '@/services/http';
-import { store, useProvider, useStore } from '@/services/store/useStore';
-import { delay } from '@/utils/base';
-// import { envs } from '@/utils/env';
+import { useEffect } from 'react';
+
+import { http } from '@/services/http';
+import {
+  store,
+  useInit,
+  useProvider,
+  useStore,
+} from '@/services/store/useStore';
+import { envs } from '@/utils/env';
 import { isNotEmpty } from '@/utils/is';
 
 const kAppStore = 'kAppStore';
@@ -30,17 +36,20 @@ interface AppSore {
   msgs: Msg[];
 }
 
+let userId = '404';
+let question;
 export const useAppStore = () => {
+  const _msgs: any = useInit(() => {
+    const url = new URL(window.location.href);
+    userId = url.searchParams.get('userId') ?? '404';
+    question = url.searchParams.get('question');
+    return isNotEmpty(question) ? [] : [{ type: 'bot', text: kHelp }];
+  });
+
   useProvider<AppSore>(kAppStore, {
     isSending: false,
-    input: '',
-    msgs: [
-      { type: 'bot', text: kHelp },
-      { type: 'user', text: '你好' },
-      { type: 'bot', text: '你好😊' },
-      { type: 'user', text: '你是谁？' },
-      { type: 'bot', text: '我是大明星' },
-    ],
+    input: question ?? '',
+    msgs: _msgs,
   });
 
   const [_store, setStore] = useStore<AppSore>(kAppStore);
@@ -60,32 +69,44 @@ export const useAppStore = () => {
         },
       ],
     });
+    // 滚动到最底部
+    setTimeout(() => {
+      document.getElementById('bottom')?.scrollIntoView();
+    }, 100);
   };
 
-  const send = async () => {
-    if (isSending || !isTexting) return;
+  const send = async (question?: string) => {
+    const { isSending: _isSending, input } = getStore() ?? {};
+    const _isTexting = isNotEmpty(input);
+    if (_isSending || !_isTexting) return;
+    const _input = question ?? input;
     // 发送消息
-    addMsg(input, 'user');
+    addMsg(_input, 'user');
     setStore({
       ...getStore(),
       isSending: true,
       input: '',
     });
     // 等待回复
-    const reply = '复读机：' + input;
-    await delay(3000);
-    // await http.post(envs.kAPI, {
-    //   userId: 'test',
-    //   question: '你好，你是谁',
-    // });
+    const reply = await http.post(envs.kAPI, {
+      userId,
+      question: _input,
+    });
     // 回复消息
-    addMsg(isNotEmpty(reply) ? reply : kDefaultText, 'bot');
+    addMsg(isNotEmpty(reply) ? reply! : kDefaultText, 'bot');
     setStore({
       ...getStore(),
       isSending: false,
     });
-    // TODO 滚动到最底部
   };
+
+  useEffect(() => {
+    // 查询首个问题
+    if (isNotEmpty(question)) {
+      send(question);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onTextInput = (input: string) => {
     setStore({

@@ -23,6 +23,7 @@ export const App = () => {
           return <MsgBubble key={idx + msg.text} {...msg} />;
         })}
         <Box height={65 + 8} />
+        <Box height={1} id="bottom" />
       </Column>
       <Footer />
     </>
