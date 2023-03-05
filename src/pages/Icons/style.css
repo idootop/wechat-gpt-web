@@ -1,4 +1,9 @@
-.wechat-icon {
+.top-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.bottom-icon {
   width: 32px;
   height: 32px;
 }

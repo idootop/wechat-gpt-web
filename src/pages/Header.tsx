@@ -2,8 +2,10 @@ import { Expand, Row } from '@/components/Flex';
 import { Text } from '@/components/Text';
 
 import { IconBack, IconMe } from './Icons';
+import { useAppStore } from './store';
 
 export const Header = () => {
+  const { isSending } = useAppStore();
   return (
     <Row
       className="glass-blur"
@@ -17,7 +19,7 @@ export const Header = () => {
       <IconBack />
       <Expand justifyContent="center">
         <Text fontSize="16px" fontWeight="bold">
-          乂乂又又
+          {isSending ? '对方正在输入...' : '乂乂又又'}
         </Text>
       </Expand>
       <IconMe />

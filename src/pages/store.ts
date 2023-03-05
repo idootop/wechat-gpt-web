@@ -1,5 +1,6 @@
 // import { http } from '@/services/http';
-import { useProvider, useStore } from '@/services/store/useStore';
+import { store, useProvider, useStore } from '@/services/store/useStore';
+import { delay } from '@/utils/base';
 // import { envs } from '@/utils/env';
 import { isNotEmpty } from '@/utils/is';
 
@@ -23,26 +24,16 @@ export interface Msg {
 }
 
 interface AppSore {
-  asking: boolean;
+  isSending: boolean;
   input: string;
   msgs: Msg[];
 }
 
 export const useAppStore = () => {
   useProvider<AppSore>(kAppStore, {
-    asking: false,
+    isSending: false,
     input: '',
     msgs: [
-      { type: 'bot', text: kHelp },
-      { type: 'user', text: '你好' },
-      { type: 'bot', text: '你好😊' },
-      { type: 'user', text: '你是谁？' },
-      { type: 'bot', text: '我是大明星' },
-      { type: 'bot', text: kHelp },
-      { type: 'user', text: '你好' },
-      { type: 'bot', text: '你好😊' },
-      { type: 'user', text: '你是谁？' },
-      { type: 'bot', text: '我是大明星' },
       { type: 'bot', text: kHelp },
       { type: 'user', text: '你好' },
       { type: 'bot', text: '你好😊' },
@@ -51,13 +42,15 @@ export const useAppStore = () => {
     ],
   });
 
-  const [store, setStore] = useStore<AppSore>(kAppStore);
-  const { asking, msgs, input } = store;
+  const [_store, setStore] = useStore<AppSore>(kAppStore);
+  const { isSending, msgs, input } = _store;
   const isTexting = isNotEmpty(input);
+
+  const getStore = () => store.get<any>(kAppStore);
 
   const addMsg = (text: string, type: 'bot' | 'user' = 'user') => {
     setStore({
-      ...store,
+      ...getStore(),
       msgs: [
         ...msgs,
         {
@@ -68,17 +61,18 @@ export const useAppStore = () => {
     });
   };
 
-  const askBot = async () => {
-    if (asking || !isTexting) return;
+  const send = async () => {
+    if (isSending || !isTexting) return;
     // 发送消息
     addMsg(input, 'user');
     setStore({
-      ...store,
-      asking: true,
+      ...getStore(),
+      isSending: true,
       input: '',
     });
     // 等待回复
     const reply = '复读机：' + input;
+    await delay(3000);
     // await http.post(envs.kAPI, {
     //   userId: 'test',
     //   question: '你好，你是谁',
@@ -86,22 +80,22 @@ export const useAppStore = () => {
     // 回复消息
     addMsg(isNotEmpty(reply) ? reply : "喵呜 ฅ'ω'ฅ", 'bot');
     setStore({
-      ...store,
-      asking: false,
+      ...getStore(),
+      isSending: false,
     });
   };
 
   const onTextInput = (input: string) => {
     setStore({
-      ...store,
+      ...getStore(),
       input,
     });
   };
 
   return {
-    asking,
+    isSending,
     msgs,
-    askBot,
+    send,
     input,
     onTextInput,
     isTexting,
