@@ -7,7 +7,7 @@ import { MsgBubble } from './Bubble';
 import { Footer } from './Footer';
 import { Header } from './Header';
 import { useAppStore } from './store';
-import { WeixinDialog } from './WeixinDiaog';
+import { Toast, WeixinDialog } from './WeixinDiaog';
 
 export const App = () => {
   const { msgs } = useAppStore();
@@ -15,6 +15,7 @@ export const App = () => {
   return (
     <>
       <WeixinDialog />
+      <Toast />
       <Header />
       <Column className="hide-scollbar">
         <Box height={65 + 8} />

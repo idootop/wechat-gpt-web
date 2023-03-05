@@ -5,6 +5,7 @@ import { delay } from '@/utils/base';
 import { isNotEmpty } from '@/utils/is';
 
 const kAppStore = 'kAppStore';
+export const kDefaultText = "喵呜 ฅ'ω'ฅ";
 const kHelp = `
 华人牌 2060 款手机傻妞为您服务，请输入开机密码。
 
@@ -52,7 +53,7 @@ export const useAppStore = () => {
     setStore({
       ...getStore(),
       msgs: [
-        ...msgs,
+        ...getStore().msgs,
         {
           type,
           text,
@@ -78,11 +79,12 @@ export const useAppStore = () => {
     //   question: '你好，你是谁',
     // });
     // 回复消息
-    addMsg(isNotEmpty(reply) ? reply : "喵呜 ฅ'ω'ฅ", 'bot');
+    addMsg(isNotEmpty(reply) ? reply : kDefaultText, 'bot');
     setStore({
       ...getStore(),
       isSending: false,
     });
+    // TODO 滚动到最底部
   };
 
   const onTextInput = (input: string) => {

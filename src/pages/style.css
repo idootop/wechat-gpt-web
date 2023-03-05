@@ -1,5 +1,6 @@
 .glass-blur {
-  backdrop-filter: blur(10px);
+  /* stylelint-disable */
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   background: rgb(237 237 237 / 80%);
 }

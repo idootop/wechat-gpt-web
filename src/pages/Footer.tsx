@@ -3,7 +3,8 @@ import { Center, Expand, Row } from '@/components/Flex';
 import { TextArea } from '@/components/Input/TextArea';
 
 import { IconAdd, IconSticker, IconVoice } from './Icons';
-import { useAppStore } from './store';
+import { kDefaultText, useAppStore } from './store';
+import { showToast } from './WeixinDiaog';
 
 export const Footer = () => {
   const { input, onTextInput, send, isTexting, isSending } = useAppStore();
@@ -18,7 +19,12 @@ export const Footer = () => {
       borderTop="1px solid #dcdfd5"
       alignItems="end"
     >
-      <Center height="38px">
+      <Center
+        height="38px"
+        onClick={() => {
+          showToast(kDefaultText);
+        }}
+      >
         <IconVoice />
       </Center>
       <Expand alignItems="center" margin="0 8px">
@@ -29,11 +35,21 @@ export const Footer = () => {
           onSubmit={send}
         />
       </Expand>
-      <Center height="38px">
+      <Center
+        height="38px"
+        onClick={() => {
+          showToast(kDefaultText);
+        }}
+      >
         <IconSticker />
       </Center>
       <Box width="8px" />
-      <Center height="38px">
+      <Center
+        height="38px"
+        onClick={() => {
+          showToast(kDefaultText);
+        }}
+      >
         {isTexting ? (
           <Box
             cursor="pointer"
@@ -44,7 +60,11 @@ export const Footer = () => {
             color="#fff"
             background="#58be69"
             borderRadius="4px"
-            onClick={send}
+            onClick={(e) => {
+              send();
+              e.stopPropagation();
+              e.preventDefault();
+            }}
           >
             发送
           </Box>
