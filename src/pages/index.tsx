@@ -17,7 +17,7 @@ export const App = () => {
       <WeixinDialog />
       <Toast />
       <Header />
-      <Column className="hide-scollbar">
+      <Column>
         <Box height={65 + 8} />
         {msgs.map((msg, idx) => {
           return <MsgBubble key={idx + msg.text} {...msg} />;

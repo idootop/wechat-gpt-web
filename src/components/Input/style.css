@@ -27,3 +27,15 @@
   font-size: 16px;
   font-weight: 400;
 }
+
+.text-input::placeholder {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+}
+
+.text-area::placeholder {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+}
