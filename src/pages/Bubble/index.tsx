@@ -3,10 +3,7 @@ import './style.css';
 import { Column, Expand, Row } from '@/components/Flex';
 import { Text } from '@/components/Text';
 
-export interface Msg {
-  type: 'user' | 'bot';
-  text: string;
-}
+import { Msg } from '../store';
 
 export const MsgBubble = (props: Msg) => {
   const { type, text } = props;
