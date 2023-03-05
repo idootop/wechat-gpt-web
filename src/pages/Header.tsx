@@ -6,11 +6,12 @@ import { IconBack, IconMe } from './Icons';
 export const Header = () => {
   return (
     <Row
+      className="glass-blur"
       top="0"
-      position="sticky"
+      position="fixed"
+      zIndex="2"
       width="100%"
       padding="16px"
-      background="#ededed"
       borderBottom="1px solid #dcdfd5"
     >
       <IconBack />

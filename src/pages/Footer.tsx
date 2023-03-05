@@ -1,25 +1,36 @@
-import { Expand, Row } from '@/components/Flex';
-import { Text } from '@/components/Text';
+import { Box } from '@/components/Box';
+import { Center, Expand, Row } from '@/components/Flex';
+import { TextArea } from '@/components/Input/TextArea';
 
-import { IconBack, IconMe } from './Icons';
+import { IconAdd, IconSticker, IconVoice } from './Icons';
+import { useAppStore } from './store';
 
 export const Footer = () => {
+  const { input, onTextInput, askBot, isTexting: _ } = useAppStore();
   return (
     <Row
-      top="0"
-      position="sticky"
-      width="100%"
-      padding="16px"
-      background="#ededed"
-      borderBottom="1px solid #dcdfd5"
+      className="glass-blur"
+      bottom="0"
+      position="fixed"
+      zIndex="2"
+      width="100vw"
+      padding="8px"
+      borderTop="1px solid #dcdfd5"
+      alignItems="end"
     >
-      <IconBack />
-      <Expand justifyContent="center">
-        <Text fontSize="16px" fontWeight="bold">
-          乂乂又又
-        </Text>
+      <Center height="38px">
+        <IconVoice />
+      </Center>
+      <Expand alignItems="center" margin="0 8px">
+        <TextArea value={input} onChange={onTextInput} onSubmit={askBot} />
       </Expand>
-      <IconMe />
+      <Center height="38px">
+        <IconSticker />
+      </Center>
+      <Box width="8px" />
+      <Center height="38px">
+        <IconAdd />
+      </Center>
     </Row>
   );
 };

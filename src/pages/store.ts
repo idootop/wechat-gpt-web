@@ -24,13 +24,25 @@ export interface Msg {
 
 interface AppSore {
   asking: boolean;
+  input: string;
   msgs: Msg[];
 }
 
 export const useAppStore = () => {
   useProvider<AppSore>(kAppStore, {
     asking: false,
+    input: '',
     msgs: [
+      { type: 'bot', text: kHelp },
+      { type: 'user', text: '你好' },
+      { type: 'bot', text: '你好😊' },
+      { type: 'user', text: '你是谁？' },
+      { type: 'bot', text: '我是大明星' },
+      { type: 'bot', text: kHelp },
+      { type: 'user', text: '你好' },
+      { type: 'bot', text: '你好😊' },
+      { type: 'user', text: '你是谁？' },
+      { type: 'bot', text: '我是大明星' },
       { type: 'bot', text: kHelp },
       { type: 'user', text: '你好' },
       { type: 'bot', text: '你好😊' },
@@ -40,7 +52,8 @@ export const useAppStore = () => {
   });
 
   const [store, setStore] = useStore<AppSore>(kAppStore);
-  const { asking, msgs } = store;
+  const { asking, msgs, input } = store;
+  const isTexting = isNotEmpty(input);
 
   const addMsg = (text: string, type: 'bot' | 'user' = 'user') => {
     setStore({
@@ -55,17 +68,22 @@ export const useAppStore = () => {
     });
   };
 
-  const askBot = async (question: string) => {
-    if (asking) return;
+  const askBot = async () => {
+    if (asking || !isTexting) return;
+    // 发送消息
+    addMsg(input, 'user');
     setStore({
       ...store,
       asking: true,
+      input: '',
     });
-    const reply = '复读机：' + question;
+    // 等待回复
+    const reply = '复读机：' + input;
     // await http.post(envs.kAPI, {
     //   userId: 'test',
     //   question: '你好，你是谁',
     // });
+    // 回复消息
     addMsg(isNotEmpty(reply) ? reply : "喵呜 ฅ'ω'ฅ", 'bot');
     setStore({
       ...store,
@@ -73,9 +91,19 @@ export const useAppStore = () => {
     });
   };
 
+  const onTextInput = (input: string) => {
+    setStore({
+      ...store,
+      input,
+    });
+  };
+
   return {
     asking,
     msgs,
     askBot,
+    input,
+    onTextInput,
+    isTexting,
   };
 };
