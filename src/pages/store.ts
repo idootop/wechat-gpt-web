@@ -88,12 +88,15 @@ export const useAppStore = () => {
       input: '',
     });
     // 等待回复
-    const reply = await http.post(envs.kAPI, {
+    let reply = await http.post(envs.kAPI, {
       userId,
       question: _input,
     });
+    // 移除奇怪的字符
+    reply = reply?.startsWith('，') ? reply.replace('，', '') : reply;
+    reply = reply?.startsWith('。') ? reply.replace('。', '') : reply;
     // 回复消息
-    addMsg(isNotEmpty(reply) ? reply! : kDefaultText, 'bot');
+    addMsg(isNotEmpty(reply) ? reply!.trim() : kDefaultText, 'bot');
     setStore({
       ...getStore(),
       isSending: false,
