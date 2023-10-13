@@ -1,4 +1,4 @@
-# GNTM
+# WechatGPT
 
 一个仿微信聊天界面的网页版 ChatGPT 聊天机器人 🤖️
 
