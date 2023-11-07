@@ -12,8 +12,8 @@ interface TextAreaProps {
   lineHeight?: number;
   value?: string;
   hint?: string;
-  onChange?: (input: string) => void;
-  onSubmit?: (input: string) => void;
+  onChange?: (input: string, height?: string) => void;
+  onSubmit?: (input: string, height?: string) => void;
 }
 
 export const TextArea = forwardRef(
@@ -67,13 +67,13 @@ export const TextArea = forwardRef(
           if (event.key === 'Enter') {
             updateInputHeight();
             const str = event.target.value;
-            onSubmit?.(str);
+            onSubmit?.(str, inputRef.current.style.height);
           }
         }}
         onChange={(event: any) => {
           updateInputHeight();
           const str = event.target.value;
-          onChange?.(str);
+          onChange?.(str, inputRef.current.style.height);
         }}
       />
     );

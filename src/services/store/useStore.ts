@@ -3,56 +3,67 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { isNotEqual } from '@/utils/diff';
 
-let _id = 0;
-export const newId = () => (_id++).toString();
-export const useId = () => useInit(() => newId());
-
-const _stores: Record<
+type GlobalStates = Record<
   string,
   { data: any; rebuilds: Record<string, () => void> }
-> = {};
+>;
 
-export const store = {
+class GlobalStore {
+  _id = 0;
+  newId = () => (this._id++).toString();
+  useId = () => useInit(() => this.newId());
+
+  __stores: GlobalStates = {};
+
+  get _stores(): GlobalStates {
+    if (typeof window === 'undefined') {
+      return this.__stores;
+    }
+    if (!window['__global_states__']) {
+      window['__global_states__'] = this.__stores;
+    }
+    return window['__global_states__'];
+  }
+
   get<T = any>(key: string): T | undefined {
-    return _stores[key]?.data;
-  },
+    return this._stores[key]?.data;
+  }
   set(key: string, data: any) {
-    if (_stores[key]) {
-      if (isNotEqual(_stores[key].data, data)) {
-        _stores[key].data = data;
-        Object.values(_stores[key].rebuilds).forEach((rebuild) => rebuild());
+    if (this._stores[key]) {
+      if (isNotEqual(this._stores[key].data, data)) {
+        this._stores[key].data = data;
+        Object.values(this._stores[key].rebuilds).forEach((rebuild) =>
+          rebuild(),
+        );
       }
     } else {
-      _stores[key] = {
+      this._stores[key] = {
         data: data,
         rebuilds: {},
       };
     }
-  },
+  }
   _addRebuildCallback(key: string, id: string, rebuild: () => void) {
-    if (_stores[key]) {
-      _stores[key].rebuilds[id] = rebuild;
+    if (this._stores[key]) {
+      this._stores[key].rebuilds[id] = rebuild;
     } else {
-      _stores[key] = {
+      this._stores[key] = {
         data: undefined,
         rebuilds: {
           [id]: rebuild,
         },
       };
     }
-  },
+  }
   _removeRebuildCallback(key: string, id: string) {
-    if (_stores[key]) {
-      delete _stores[key].rebuilds[id];
+    if (this._stores[key]) {
+      delete this._stores[key].rebuilds[id];
     }
-  },
-};
+  }
+}
 
-/**
- * 初始化hook
- *
- * 此hook中的初始化函数会立即初始化，且只执行一次
- */
+export const store = new GlobalStore();
+
 export const useInit = <T>(fn: () => T, deps?: any[]): T => {
   const ref = useRef<any>({
     result: 404,
@@ -62,6 +73,7 @@ export const useInit = <T>(fn: () => T, deps?: any[]): T => {
     ref.current.result = fn();
     ref.current.deps = deps;
   }
+
   return ref.current.result;
 };
 
@@ -73,35 +85,20 @@ export const useDispose = (fn: () => void) => {
 
 export const useRebuild = () => {
   const [flag, setFlag] = useState(false);
+
   return useCallback(() => {
     setFlag(!flag);
   }, [flag]);
-};
-
-export const useRebuildRef = () => {
-  const ref = useRef({
-    rebuild: () => undefined as any,
-  });
-  const [flag, setFlag] = useState(false);
-  ref.current.rebuild = () => {
-    setFlag(!flag);
-  };
-  return ref;
-};
-
-export const useRefCallback = <T = any>(fn: any) => {
-  const ref = useRef<T>();
-  ref.current = fn;
-  return ref;
 };
 
 export const useStore = <T = any>(
   key: string,
   data?: any,
   filter?: (state: T | undefined) => any,
-): [T, (newData: T | undefined) => void, () => T | undefined] => {
+): [T | undefined, (newData: T | undefined) => void, () => T | undefined] => {
+  useProvider(key, data);
   const ref = useRef({
-    id: newId(),
+    id: store.newId(),
     rebuild: undefined as any,
   });
   const currentData = () => [
@@ -111,8 +108,6 @@ export const useStore = <T = any>(
     },
     () => store.get(key),
   ];
-
-  // 更新刷新回调
   const _rebuild = useRebuild();
   ref.current.rebuild = _rebuild;
   const memoFilterRef = useMemoFilter({
@@ -127,26 +122,12 @@ export const useStore = <T = any>(
   const rebuild = useCallback(() => {
     memoFilterRef.current.onChange();
   }, []);
-
-  // 初始化数据
-  useInit(() => {
-    if (data) {
-      store.set(key, data);
-    }
-  });
-
-  // 注册刷新回调
-  useInit(() => {
-    store._addRebuildCallback(key, ref.current.id, rebuild);
-  }, []);
-
   useEffect(() => {
+    store._addRebuildCallback(key, ref.current.id, rebuild);
     return () => {
-      // 当组件卸载后，回收刷新回调
       store._removeRebuildCallback(key, ref.current.id);
     };
   }, []);
-
   return memoFilterRef.current.data ?? currentData();
 };
 
@@ -188,6 +169,7 @@ export const useMemoFilter = <Q = any, F = Q>(props: {
   if (immediately) {
     ref.current.onChange();
   }
+
   return ref;
 };
 
@@ -198,8 +180,7 @@ export const useConsumer = <T = any>(
 
 export const useProvider = <T>(key: string, data: T | undefined) => {
   useInit(() => {
-    if (!_stores[key]) {
-      // 只初始化一次
+    if (!store._stores[key]) {
       store.set(key, data);
     }
   }, []);

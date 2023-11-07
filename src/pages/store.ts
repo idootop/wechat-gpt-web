@@ -12,18 +12,7 @@ import { isNotEmpty } from '@/utils/is';
 
 const kAppStore = 'kAppStore';
 export const kDefaultText = "喵呜 ฅ'ω'ฅ";
-const kHelp = `
-华人牌 2060 款手机傻妞为您服务，请输入开机密码。
-
-🔥 定制人设
-💬 人设 @ 你是大明星
-
-🔑 绑定密钥
-💬 绑定 @ sk-xxx
-
-🔌 重启傻妞
-💬 重启
-`.trim();
+const kHelp = "喵呜 ฅ'ω'ฅ";
 
 export interface Msg {
   type: 'user' | 'bot';
@@ -34,6 +23,7 @@ interface AppSore {
   isSending: boolean;
   input: string;
   msgs: Msg[];
+  inputHeight: string;
 }
 
 let userId = '404';
@@ -50,10 +40,11 @@ export const useAppStore = () => {
     isSending: false,
     input: question ?? '',
     msgs: _msgs,
+    inputHeight: '38px',
   });
 
   const [_store, setStore] = useStore<AppSore>(kAppStore);
-  const { isSending, msgs, input } = _store;
+  const { isSending, msgs, input, inputHeight } = _store ?? {};
   const isTexting = isNotEmpty(input);
 
   const getStore = () => store.get<any>(kAppStore);
@@ -75,7 +66,7 @@ export const useAppStore = () => {
     }, 100);
   };
 
-  const send = async (question?: string) => {
+  const send = async (question?: string, inputHeight?: string) => {
     const { isSending: _isSending, input } = getStore() ?? {};
     const _isTexting = isNotEmpty(input);
     if (_isSending || !_isTexting) return;
@@ -86,15 +77,13 @@ export const useAppStore = () => {
       ...getStore(),
       isSending: true,
       input: '',
+      inputHeight,
     });
     // 等待回复
-    let reply = await http.post(envs.kAPI, {
+    const reply = await http.post(envs.kAPI, {
       userId,
       question: _input,
     });
-    // 移除奇怪的字符
-    reply = reply?.startsWith('，') ? reply.replace('，', '') : reply;
-    reply = reply?.startsWith('。') ? reply.replace('。', '') : reply;
     // 回复消息
     addMsg(isNotEmpty(reply) ? reply!.trim() : kDefaultText, 'bot');
     setStore({
@@ -111,10 +100,11 @@ export const useAppStore = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onTextInput = (input: string) => {
+  const onTextInput = (input: string, inputHeight) => {
     setStore({
       ...getStore(),
       input,
+      inputHeight,
     });
   };
 
@@ -125,5 +115,6 @@ export const useAppStore = () => {
     input,
     onTextInput,
     isTexting,
+    inputHeight,
   };
 };

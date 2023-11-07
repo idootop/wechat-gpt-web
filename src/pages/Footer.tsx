@@ -12,8 +12,7 @@ export const Footer = () => {
     <Row
       className="glass-blur"
       bottom="0"
-      position="fixed"
-      zIndex="2"
+      position="sticky"
       width="100vw"
       padding="8px"
       borderTop="1px solid #dcdfd5"
