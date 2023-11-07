@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import { http } from '@/services/http';
 import {
   store,
@@ -33,7 +31,16 @@ export const useAppStore = () => {
     const url = new URL(window.location.href);
     userId = url.searchParams.get('userId') ?? '404';
     question = url.searchParams.get('question');
-    return isNotEmpty(question) ? [] : [{ type: 'bot', text: kHelp }];
+    if (isNotEmpty(question)) {
+      setTimeout(() => {
+        // 查询首个问题
+        if (isNotEmpty(question)) {
+          send(question);
+        }
+      }, 100);
+      return [];
+    }
+    return [{ type: 'bot', text: kHelp }];
   });
 
   useProvider<AppSore>(kAppStore, {
@@ -91,14 +98,6 @@ export const useAppStore = () => {
       isSending: false,
     });
   };
-
-  useEffect(() => {
-    // 查询首个问题
-    if (isNotEmpty(question)) {
-      send(question);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const onTextInput = (input: string, inputHeight) => {
     setStore({
