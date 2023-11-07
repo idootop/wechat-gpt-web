@@ -1,6 +1,6 @@
 import { Box } from '@/components/Box';
 import { Center, Expand, Row } from '@/components/Flex';
-import { TextArea } from '@/components/Input/TextArea';
+import { TextInput } from '@/components/Input/TextInput';
 
 import { IconAdd, IconSticker, IconVoice } from './Icons';
 import { kDefaultText, useAppStore } from './store';
@@ -12,7 +12,7 @@ export const Footer = () => {
     <Row
       className="glass-blur"
       bottom="0"
-      position="sticky"
+      position="fixed"
       width="100vw"
       padding="8px"
       borderTop="1px solid #dcdfd5"
@@ -27,7 +27,10 @@ export const Footer = () => {
         <IconVoice />
       </Center>
       <Expand alignItems="center" margin="0 8px">
-        <TextArea
+        <TextInput
+          height="38px"
+          minHeight="38px"
+          maxHeight="38px"
           value={isSending ? '' : input}
           hint={isSending ? '对方正在输入中...' : ''}
           onChange={onTextInput}

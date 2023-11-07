@@ -32,6 +32,7 @@ export const MsgBubble = (props: Msg) => {
   ) : (
     <Row width="100%" alignItems="start" padding="10px 16px 10px 64px">
       <Expand justifyContent="end">
+        <Expand />
         <Column justifyContent="center" className="chat-bubble-right">
           <Text fontSize="16px" fontWeight="400">
             {text}
@@ -40,7 +41,6 @@ export const MsgBubble = (props: Msg) => {
       </Expand>
       <img
         onClick={() => {
-          // TODO 编辑上传个人头像
           showWeixinDialog();
         }}
         src="user.jpg"

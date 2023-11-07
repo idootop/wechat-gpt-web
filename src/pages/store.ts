@@ -21,7 +21,6 @@ interface AppSore {
   isSending: boolean;
   input: string;
   msgs: Msg[];
-  inputHeight: string;
 }
 
 let userId = '404';
@@ -47,11 +46,10 @@ export const useAppStore = () => {
     isSending: false,
     input: question ?? '',
     msgs: _msgs,
-    inputHeight: '38px',
   });
 
   const [_store, setStore] = useStore<AppSore>(kAppStore);
-  const { isSending, msgs, input, inputHeight } = _store ?? {};
+  const { isSending, msgs, input } = _store ?? {};
   const isTexting = isNotEmpty(input);
 
   const getStore = () => store.get<any>(kAppStore);
@@ -73,7 +71,7 @@ export const useAppStore = () => {
     }, 100);
   };
 
-  const send = async (question?: string, inputHeight?: string) => {
+  const send = async (question?: string) => {
     const { isSending: _isSending, input } = getStore() ?? {};
     const _isTexting = isNotEmpty(input);
     if (_isSending || !_isTexting) return;
@@ -84,7 +82,6 @@ export const useAppStore = () => {
       ...getStore(),
       isSending: true,
       input: '',
-      inputHeight,
     });
     // 等待回复
     const reply = await http.post(envs.kAPI, {
@@ -99,11 +96,10 @@ export const useAppStore = () => {
     });
   };
 
-  const onTextInput = (input: string, inputHeight) => {
+  const onTextInput = (input: string) => {
     setStore({
       ...getStore(),
       input,
-      inputHeight,
     });
   };
 
@@ -114,6 +110,5 @@ export const useAppStore = () => {
     input,
     onTextInput,
     isTexting,
-    inputHeight,
   };
 };
